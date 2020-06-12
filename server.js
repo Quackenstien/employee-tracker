@@ -128,7 +128,6 @@ function addRole() {
           },
         ])
         .then(function (result) {
-          // let deptID;
           for (let i = 0; i < departments.length; i++) {
             if (departments[i].name == result.choice) {
               result.department_id = departments[i].id;
@@ -140,10 +139,9 @@ function addRole() {
             salary: result.salary,
             department_id: result.department_id,
           };
-          // const query = "SELECT * FROM role";
           connection.query(query, values, function (err) {
             if (err) throw err;
-            console.table("Role was successfully added");
+            console.table("Role was added");
             runTracker();
           });
         });
@@ -192,7 +190,7 @@ function addEmployee() {
         };
         connection.query(query, values, function (err, res) {
           if (err) throw err;
-          console.log("Employee was sucessfully added");
+          console.log("Employee was added");
           runTracker();
         });
       });
