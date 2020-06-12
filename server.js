@@ -21,12 +21,6 @@ connection.connect(function (err) {
 });
 
 //Displaying the prompts to the user in the terminal
-
-connection.connect(function (err) {
-  if (err) throw err;
-  runTracker();
-});
-
 function runTracker() {
   inquirer
     .prompt([
@@ -212,6 +206,7 @@ function viewRole() {
     runTracker();
   });
 }
+
 function viewEmployee() {
   const query = "SELECT * FROM employee";
   connection.query(query, function (err, res) {
@@ -219,5 +214,76 @@ function viewEmployee() {
     console.log("All employees:");
     console.table(res);
     runTracker();
+  });
+}
+
+function viewDepartment() {
+  const query = "SELECT * FROM department";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+    console.log("All Departments:");
+    console.table(res);
+    runTracker();
+  });
+}
+
+function update() {
+  const roleQuery = "SELECT * FROM role;";
+  const deptQuery = "SELECT * FROM department";
+  connection.query(roleQuery, function (err, roles) {
+    connection.query(deptQuery, function (err, departments) {
+      if (err) throw err;
+      inquirer
+        .prompt([
+          {
+            name: "updateRole",
+            type: "rawlist",
+            choices: function () {
+              var rolesArray = [];
+              for (var i = 0; i < roles.length; i++) {
+                rolesArray.push(roles[i].title);
+              }
+              return rolesArray;
+            },
+            message: "What role would you like to update?",
+          },
+          {
+            name: "newSalary",
+            tyoe: "input",
+            message: "What is the salary for the updated role?",
+          },
+          {
+            name: "newDept",
+            type: "rawlist",
+            choices: function () {
+              var deptArray = [];
+              for (var i = 0; i < departments.length; i++) {
+                deptArray.push(departments[i].name);
+              }
+              return deptArray;
+            },
+            message: "What department does this updated role fall under?",
+          },
+        ])
+        .then(function (result) {
+          for (let i = 0; i < departments.length; i++) {
+            if (departments[i].name == result.choice) {
+              result.department_id = departments[i].id;
+            }
+          }
+          let query =
+            "UPDATE role SET title = ?, salary = ? WHERE department_id = ?";
+          const values = [
+            { title: result.updateRole },
+            { salary: result.newSalary },
+            { department_id: result.department_id },
+          ];
+          connection.query(query, values, function (err) {
+            if (err) throw err;
+            console.log("The role was updated");
+            runTracker();
+          });
+        });
+    });
   });
 }
