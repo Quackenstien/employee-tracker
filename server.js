@@ -21,6 +21,12 @@ connection.connect(function (err) {
 });
 
 //Displaying the prompts to the user in the terminal
+
+connection.connect(function (err) {
+  if (err) throw err;
+  runTracker();
+});
+
 function runTracker() {
   inquirer
     .prompt([
@@ -32,9 +38,9 @@ function runTracker() {
           "Add a department",
           "Add a role",
           "Add an employee",
-          "View a department",
-          "View a role",
-          "View an employee",
+          "View departments",
+          "View roles",
+          "View employees",
           "Update employee role",
           "Exit",
         ],
@@ -50,19 +56,19 @@ function runTracker() {
           addRole();
           break;
 
-        case "Add an Employee":
+        case "Add an employee":
           addEmployee();
           break;
 
-        case "View a department":
+        case "View departments":
           viewDepartment();
           break;
 
-        case "View a role":
+        case "View roles":
           viewRole();
           break;
 
-        case "View an employee":
+        case "View employees":
           viewEmployee();
           break;
 
@@ -194,5 +200,24 @@ function addEmployee() {
           runTracker();
         });
       });
+  });
+}
+
+function viewRole() {
+  const query = "SELECT * FROM role";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+    console.log("All roles:");
+    console.table(res);
+    runTracker();
+  });
+}
+function viewEmployee() {
+  const query = "SELECT * FROM employee";
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+    console.log("All employees:");
+    console.table(res);
+    runTracker();
   });
 }
